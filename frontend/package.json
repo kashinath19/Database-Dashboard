@@ -24,6 +24,13 @@
   },
   "engines": {
   "node": ">=18"
+},
+  "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "prebuild": "chmod +x node_modules/.bin/vite || true"
 }
+
 
 }
