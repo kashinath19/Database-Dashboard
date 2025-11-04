@@ -34,35 +34,35 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
-DB_NAME = os.getenv("DB_NAME")
+# Use Render's DATABASE_URL environment variable
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Fallback for local development (optional)
+if not DATABASE_URL:
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASS = os.getenv("DB_PASS", "password")
+    DB_NAME = os.getenv("DB_NAME", "resumes")
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
 APP_HOST = os.getenv("APP_HOST", "0.0.0.0")
-APP_PORT = int(os.getenv("APP_PORT", "8000"))
+APP_PORT = int(os.getenv("PORT", "8000"))  # Render uses PORT environment variable
 
-# Validate required environment variables
-required_vars = ["DB_HOST", "DB_PORT", "DB_USER", "DB_NAME"]
-missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-if missing_vars:
-    logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
-    raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+# Convert postgres:// to postgresql:// for SQLAlchemy
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 logger.info("Application starting...")
-logger.info(f"Database: {DB_NAME} at {DB_HOST}:{DB_PORT}")
 logger.info(f"Server: {APP_HOST}:{APP_PORT}")
 
 # =============================================
 # DATABASE SETUP
 # =============================================
 
-DB_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
-
 try:
     engine = create_engine(
-        DB_URL,
+        DATABASE_URL,
         pool_pre_ping=True,
         pool_recycle=3600,
         echo=False
@@ -71,11 +71,12 @@ try:
     # Test connection
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
-    logger.info("Database connection successful")
+    logger.info("✅ Database connection successful")
     
 except Exception as e:
-    logger.error(f"Database connection failed: {str(e)}")
-    raise
+    logger.error(f"❌ Database connection failed: {str(e)}")
+    logger.warning("⚠️ Starting without database connection")
+    engine = None
 
 # =============================================
 # FASTAPI APPLICATION
@@ -101,13 +102,16 @@ app.add_middleware(
 
 def column_exists(table_name: str, column_name: str) -> bool:
     """Check if a column exists in a table"""
+    if not engine:
+        return False
+        
     try:
         with engine.connect() as conn:
+            # PostgreSQL version
             result = conn.execute(
                 text(f"""
                     SELECT COUNT(*) FROM information_schema.columns 
-                    WHERE table_schema = DATABASE() 
-                    AND table_name = :table_name 
+                    WHERE table_name = :table_name 
                     AND column_name = :column_name
                 """),
                 {"table_name": table_name, "column_name": column_name}
@@ -145,7 +149,7 @@ def build_where_conditions(table_name: str, filters: Dict[str, Any]) -> tuple:
                 conditions.append("(full_name LIKE :search OR email LIKE :search OR phone LIKE :search)")
                 params['search'] = f"%{value}%"
             elif table_name == 'generated_resumes':
-                conditions.append("resume_data LIKE :search")
+                conditions.append("resume_data::text LIKE :search")
                 params['search'] = f"%{value}%"
         
         elif key == 'auth_method' and value:
@@ -195,7 +199,11 @@ def parse_resume_data(resume: Dict[str, Any]) -> Dict[str, Any]:
     
     if resume.get('resume_data'):
         try:
-            parsed_data = json.loads(resume['resume_data'])
+            # Handle both string JSON and already parsed JSON
+            if isinstance(resume['resume_data'], str):
+                parsed_data = json.loads(resume['resume_data'])
+            else:
+                parsed_data = resume['resume_data']
             resume['resume_data'] = parsed_data
             experience_from_json = parsed_data.get('experience')
         except (json.JSONDecodeError, TypeError):
@@ -214,10 +222,13 @@ def parse_resume_data(resume: Dict[str, Any]) -> Dict[str, Any]:
 
 def execute_count_query(table_name: str, conditions: List[str], params: Dict[str, Any]) -> int:
     """Execute count query for pagination"""
+    if not engine:
+        return 0
+        
     try:
         with engine.connect() as conn:
             where_clause = " AND ".join(conditions) if conditions else "1=1"
-            count_query = text(f"SELECT COUNT(*) as total FROM `{table_name}` WHERE {where_clause}")
+            count_query = text(f"SELECT COUNT(*) as total FROM {table_name} WHERE {where_clause}")
             result = conn.execute(count_query, params)
             return result.scalar()
     except SQLAlchemyError as e:
@@ -227,6 +238,9 @@ def execute_count_query(table_name: str, conditions: List[str], params: Dict[str
 def execute_data_query(table_name: str, conditions: List[str], params: Dict[str, Any], 
                       sort_by: str, sort_order: str, limit: int, offset: int) -> List[Dict[str, Any]]:
     """Execute data query with pagination and sorting"""
+    if not engine:
+        return []
+        
     try:
         with engine.connect() as conn:
             where_clause = " AND ".join(conditions) if conditions else "1=1"
@@ -236,10 +250,10 @@ def execute_data_query(table_name: str, conditions: List[str], params: Dict[str,
             if sort_by not in valid_sort_columns and not column_exists(table_name, sort_by):
                 sort_by = 'id'
             
-            order_clause = f"`{sort_by}` {sort_order.upper()}" if sort_by else "id DESC"
+            order_clause = f"{sort_by} {sort_order.upper()}" if sort_by else "id DESC"
             
             query = text(f"""
-                SELECT * FROM `{table_name}` 
+                SELECT * FROM {table_name} 
                 WHERE {where_clause}
                 ORDER BY {order_clause}
                 LIMIT :limit OFFSET :offset
@@ -296,6 +310,19 @@ def get_users(
     date_to: Optional[str] = Query(None)
 ):
     """Get paginated users with filtering and sorting"""
+    if not engine:
+        return {
+            "data": [],
+            "pagination": {
+                "current_page": page,
+                "per_page": limit,
+                "total_records": 0,
+                "total_pages": 1,
+                "has_next": False,
+                "has_prev": False
+            }
+        }
+    
     filters = {
         'search': search,
         'auth_method': auth_method,
@@ -337,6 +364,19 @@ def get_contacts(
     date_to: Optional[str] = Query(None)
 ):
     """Get paginated contacts with filtering and sorting"""
+    if not engine:
+        return {
+            "data": [],
+            "pagination": {
+                "current_page": page,
+                "per_page": limit,
+                "total_records": 0,
+                "total_pages": 1,
+                "has_next": False,
+                "has_prev": False
+            }
+        }
+    
     filters = {
         'search': search,
         'chosen_field': chosen_field,
@@ -374,6 +414,19 @@ def get_generated_resumes(
     user_id: Optional[int] = Query(None)
 ):
     """Get paginated resumes with filtering and sorting"""
+    if not engine:
+        return {
+            "data": [],
+            "pagination": {
+                "current_page": page,
+                "per_page": limit,
+                "total_records": 0,
+                "total_pages": 1,
+                "has_next": False,
+                "has_prev": False
+            }
+        }
+    
     filters = {
         'search': search,
         'user_id': user_id
@@ -406,6 +459,9 @@ def get_generated_resumes(
 @app.get("/users/{user_id}/resumes")
 def get_user_resumes(user_id: int):
     """Get all resumes for a specific user"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             # Verify user exists
@@ -433,6 +489,9 @@ def get_user_resumes(user_id: int):
 @app.get("/generated_resumes/{resume_id}/user")
 def get_resume_user(resume_id: int):
     """Get user information for a specific resume"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             # Get resume and user_id
@@ -472,6 +531,9 @@ def get_resume_user(resume_id: int):
 @app.get("/users/{user_id}/stats")
 def get_user_stats(user_id: int):
     """Get statistics for a specific user"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             # Verify user exists
@@ -517,6 +579,18 @@ def get_user_stats(user_id: int):
 @app.get("/database/stats")
 def get_database_stats():
     """Get overall database statistics"""
+    if not engine:
+        return {
+            "database_name": "Not connected",
+            "table_stats": {
+                "users": 0,
+                "contacts": 0,
+                "generated_resumes": 0
+            },
+            "total_records": 0,
+            "timestamp": datetime.now().isoformat()
+        }
+        
     try:
         with engine.connect() as conn:
             # Table counts
@@ -525,7 +599,7 @@ def get_database_stats():
             resumes_count = conn.execute(text("SELECT COUNT(*) FROM generated_resumes")).scalar()
             
             # Database info
-            db_info_result = conn.execute(text("SELECT DATABASE() as db_name"))
+            db_info_result = conn.execute(text("SELECT current_database() as db_name"))
             db_name = db_info_result.scalar()
             
             return {
@@ -542,31 +616,18 @@ def get_database_stats():
         logger.error(f"Database error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-@app.get("/database/relationships")
-def get_database_relationships():
-    """Get foreign key relationships information"""
-    try:
-        with engine.connect() as conn:
-            relationships = {
-                "generated_resumes": {
-                    "user_id": {
-                        "references": "users.id",
-                        "description": "Resumes belong to users"
-                    }
-                }
-            }
-            
-            return {
-                "relationships": relationships,
-                "notes": "Foreign key: generated_resumes.user_id → users.id"
-            }
-    except SQLAlchemyError as e:
-        logger.error(f"Database error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
 @app.get("/stats/global")
 def get_global_stats():
     """Get global statistics"""
+    if not engine:
+        return {
+            "total_users": 0,
+            "total_contacts": 0,
+            "total_resumes": 0,
+            "users_with_resumes": 0,
+            "resumes_per_user": 0
+        }
+        
     try:
         with engine.connect() as conn:
             # Total counts
@@ -593,6 +654,16 @@ def get_global_stats():
 @app.get("/stats/users")
 def get_users_stats():
     """Get users statistics"""
+    if not engine:
+        return {
+            "total_users": 0,
+            "auth_method_distribution": {},
+            "active_users": 0,
+            "inactive_users": 0,
+            "users_with_phone": 0,
+            "users_without_phone": 0
+        }
+        
     try:
         with engine.connect() as conn:
             # FIXED: Auth method distribution using oauth_provider and password_hash
@@ -646,6 +717,16 @@ def get_users_stats():
 @app.get("/stats/contacts")
 def get_contacts_stats():
     """Get contacts statistics"""
+    if not engine:
+        return {
+            "total_contacts": 0,
+            "field_distribution": {},
+            "date_range": {
+                "oldest": None,
+                "newest": None
+            }
+        }
+        
     try:
         with engine.connect() as conn:
             # Field distribution
@@ -677,6 +758,13 @@ def get_contacts_stats():
 @app.get("/stats/resumes")
 def get_resumes_stats():
     """Get resumes statistics"""
+    if not engine:
+        return {
+            "total_resumes": 0,
+            "users_with_resumes": 0,
+            "resumes_per_user": 0
+        }
+        
     try:
         with engine.connect() as conn:
             # Users with resumes
@@ -705,6 +793,14 @@ def search_all(
     tables: str = Query("users,contacts,resumes")
 ):
     """Search across multiple tables"""
+    if not engine:
+        return {
+            "query": q,
+            "tables_searched": [],
+            "total_results": 0,
+            "results": {}
+        }
+        
     try:
         table_list = [table.strip() for table in tables.split(',')]
         results = {}
@@ -727,7 +823,7 @@ def search_all(
             
             if 'resumes' in table_list:
                 resumes_result = conn.execute(
-                    text("SELECT * FROM generated_resumes WHERE resume_data LIKE :search LIMIT 20"),
+                    text("SELECT * FROM generated_resumes WHERE resume_data::text LIKE :search LIMIT 20"),
                     {"search": f"%{q}%"}
                 )
                 resumes = [dict(row._mapping) for row in resumes_result]
@@ -754,6 +850,9 @@ def search_all(
 @app.get("/users/{user_id}")
 def get_user(user_id: int):
     """Get a single user by ID"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             result = conn.execute(
@@ -776,6 +875,9 @@ def get_user(user_id: int):
 @app.get("/contacts/{contact_id}")
 def get_contact(contact_id: int):
     """Get a single contact by ID"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             result = conn.execute(
@@ -795,6 +897,9 @@ def get_contact(contact_id: int):
 @app.get("/generated_resumes/{resume_id}")
 def get_resume(resume_id: int):
     """Get a single resume by ID"""
+    if not engine:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
     try:
         with engine.connect() as conn:
             result = conn.execute(
@@ -824,6 +929,7 @@ async def root():
     return {
         "name": "Resumes API",
         "version": "1.0.0",
+        "database_connected": engine is not None,
         "endpoints": {
             "users": "/users",
             "contacts": "/contacts", 
@@ -839,12 +945,19 @@ async def root():
         }
     }
 
-
-# Add this to main.py after the existing endpoints
-
 @app.get("/filters/options")
 def get_filter_options():
     """Get available filter options for all tables"""
+    if not engine:
+        return {
+            "auth_methods": [],
+            "chosen_fields": [],
+            "experience_range": {
+                "min": 0,
+                "max": 50
+            }
+        }
+        
     try:
         with engine.connect() as conn:
             # Get auth methods from users
@@ -872,11 +985,11 @@ def get_filter_options():
             experience_range_result = conn.execute(
                 text("""
                     SELECT 
-                        MIN(CAST(JSON_EXTRACT(resume_data, '$.experience') AS DECIMAL)) as min_exp,
-                        MAX(CAST(JSON_EXTRACT(resume_data, '$.experience') AS DECIMAL)) as max_exp
+                        MIN((resume_data->>'experience')::DECIMAL) as min_exp,
+                        MAX((resume_data->>'experience')::DECIMAL) as max_exp
                     FROM generated_resumes 
                     WHERE resume_data IS NOT NULL 
-                    AND JSON_EXTRACT(resume_data, '$.experience') IS NOT NULL
+                    AND resume_data->>'experience' IS NOT NULL
                 """)
             )
             exp_range = experience_range_result.first()
@@ -892,20 +1005,33 @@ def get_filter_options():
     except SQLAlchemyError as e:
         logger.error(f"Filter options error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Filter options error: {str(e)}")
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "timestamp": datetime.now().isoformat()
-        }
+        if engine:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            return {
+                "status": "healthy",
+                "database": "connected",
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            return {
+                "status": "degraded",
+                "database": "disconnected",
+                "timestamp": datetime.now().isoformat()
+            }
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
-        raise HTTPException(status_code=503, detail="Service unavailable")
+        return {
+            "status": "unhealthy",
+            "database": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
 
 # =============================================
 # EXCEPTION HANDLER
@@ -927,6 +1053,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 async def startup():
     logger.info("=" * 50)
     logger.info("API Server Started")
+    logger.info(f"Database connected: {engine is not None}")
     logger.info(f"Docs available at: http://{APP_HOST}:{APP_PORT}/docs")
     logger.info("=" * 50)
 
@@ -944,6 +1071,6 @@ if __name__ == "__main__":
         "main:app",
         host=APP_HOST,
         port=APP_PORT,
-        reload=True,
+        reload=False,  # Disable reload in production
         log_config=None
     )
