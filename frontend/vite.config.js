@@ -10,13 +10,13 @@ export default defineConfig({
     proxy: {
       // forward calls beginning with /api to your backend
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://database-dashboard-backend.onrender.com',
         changeOrigin: true,
         secure: false
       },
       // if your frontend calls /generated_resumes directly, proxy that too
       '/generated_resumes': {
-        target: 'http://localhost:8000',
+        target: 'https://database-dashboard-backend.onrender.com',
         changeOrigin: true,
         secure: false
       }
