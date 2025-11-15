@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 export const useFilters = (tableName) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+<<<<<<< HEAD
   const [columnFilters, setColumnFilters] = useState([]);
 
   // Initialize column filters from URL params
@@ -17,10 +18,18 @@ export const useFilters = (tableName) => {
     });
     return filters;
   }, [searchParams]);
+=======
+
+  const filterKeys = [
+    'search', 'auth_method', 'has_phone', 'last_login', 'chosen_field',
+    'user_id', 'experience_min', 'experience_max', 'date_from', 'date_to'
+  ];
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
   // Memoized filters
   const filters = useMemo(() => {
     const params = {};
+<<<<<<< HEAD
     const columnFilters = initializeColumnFilters();
     
     // Add column filters to params
@@ -134,6 +143,55 @@ export const useFilters = (tableName) => {
         newParams.set('page', '1');
       }
       
+=======
+    
+    filterKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value !== null && value !== '') {
+        if (key === 'has_phone') {
+          params[key] = value === 'true';
+        } else if (['user_id', 'experience_min', 'experience_max'].includes(key)) {
+          const numValue = Number(value);
+          params[key] = isNaN(numValue) ? value : numValue;
+        } else {
+          params[key] = value;
+        }
+      }
+    });
+
+    return params;
+  }, [searchParams]);
+
+  // Smart filter updater with page reset
+  const updateFilters = useCallback((newFilters) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      const currentPage = newParams.get('page'); // Store current page
+
+      // Remove all old filter params
+      filterKeys.forEach(param => {
+        newParams.delete(param);
+      });
+
+      // Set new filters
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          newParams.set(key, value.toString());
+        }
+      });
+
+      // Only reset page to 1 if filters actually changed
+      const hasFilterChanges = filterKeys.some(key => 
+        newFilters[key]?.toString() !== prev.get(key)?.toString()
+      );
+
+      if (hasFilterChanges) {
+        newParams.set('page', '1');
+      } else {
+        newParams.set('page', currentPage || '1');
+      }
+
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
       return newParams;
     }, { replace: true });
   }, [setSearchParams]);
@@ -156,11 +214,15 @@ export const useFilters = (tableName) => {
     }, { replace: true });
     
     setSearchQuery('');
+<<<<<<< HEAD
     setColumnFilters([]);
+=======
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   }, [setSearchParams, setSearchQuery]);
 
   // Detect if any filter is currently active
   const hasActiveFilters = useMemo(() => {
+<<<<<<< HEAD
     return searchQuery || columnFilters.length > 0;
   }, [searchQuery, columnFilters]);
 
@@ -172,13 +234,27 @@ export const useFilters = (tableName) => {
   return {
     filters,
     columnFilters,
+=======
+    return filterKeys.some(key => {
+      const value = searchParams.get(key);
+      return value !== null && value !== '';
+    });
+  }, [searchParams]);
+
+  return {
+    filters,
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
     searchQuery,
     setSearchQuery,
     updateFilters,
     clearFilters,
+<<<<<<< HEAD
     hasActiveFilters,
     addColumnFilter,
     removeColumnFilter,
     clearColumnFilters
+=======
+    hasActiveFilters
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   };
 };

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 ﻿﻿﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+=======
+﻿import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 import { useApi } from '../hooks/useApi';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 import { EmptyState } from '../components/common/EmptyState';
 import { formatDate, formatDateTime, formatPhone, capitalize, formatRelativeTime, formatExperience } from '../utils/formatters';
 import { parseResumeData } from '../utils/parseResumeData';
+<<<<<<< HEAD
 import { getRecordEndpoint, getTableEndpoint } from '../utils/api';
 import { User, Mail, Phone, Calendar, MapPin, Star, MessageCircle, Users, FileText, Link, Award, GraduationCap, Briefcase, Code, BookOpen, ExternalLink } from 'lucide-react';
 
@@ -118,14 +124,46 @@ export const RecordDetail = () => {
   if (loading && !recordFromState) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
+=======
+
+export const RecordDetail = () => {
+  const { table, id } = useParams();
+  const navigate = useNavigate();
+
+  // Map table names to API endpoints
+  const getEndpoint = () => {
+    switch (table) {
+      case 'users':
+        return `/users/${id}`;
+      case 'contacts':
+        return `/contacts/${id}`;
+      case 'resumes':
+        return `/generated_resumes/${id}`;
+      default:
+        return null;
+    }
+  };
+
+  const { data: record, loading, error } = useApi(getEndpoint());
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         <LoadingSkeleton type="card" count={1} />
       </div>
     );
   }
 
+<<<<<<< HEAD
   if (error && !recordFromState) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
+=======
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         <EmptyState
           type="data"
           title="Record not found"
@@ -133,7 +171,11 @@ export const RecordDetail = () => {
           action={
             <button
               onClick={() => navigate(-1)}
+<<<<<<< HEAD
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+=======
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             >
               Go Back
             </button>
@@ -143,6 +185,7 @@ export const RecordDetail = () => {
     );
   }
 
+<<<<<<< HEAD
   if (!currentRecord) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -304,11 +347,16 @@ export const RecordDetail = () => {
 
   const renderUserDetail = () => {
     const isConversationsUser = database === 'conversations';
+=======
+  const renderUserDetail = () => {
+    if (!record) return null;
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+<<<<<<< HEAD
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -325,11 +373,18 @@ export const RecordDetail = () => {
               </span>
             )}
           </div>
+=======
+          <h1 className="text-2xl font-bold text-gray-900">
+            {record.name || 'Unnamed User'}
+          </h1>
+          <p className="text-gray-600">User ID: {record.id}</p>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         </div>
 
         <div className="p-6">
           {/* Personal Information */}
           <div className="mb-8">
+<<<<<<< HEAD
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <User className="h-5 w-5 mr-2" />
               Personal Information
@@ -361,11 +416,32 @@ export const RecordDetail = () => {
                   <p className="text-gray-900 font-mono text-sm">{currentRecord.oauth_id}</p>
                 </div>
               )}
+=======
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Email</label>
+                <p className="text-gray-900">{record.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Phone</label>
+                <p className="text-gray-900">{formatPhone(record.phone)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Auth Method</label>
+                <p className="text-gray-900">{capitalize(record.oauth_provider || record.auth_method || 'email')}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">OAuth ID</label>
+                <p className="text-gray-900">{record.oauth_id || 'Not set'}</p>
+              </div>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             </div>
           </div>
 
           {/* Activity Information */}
           <div className="mb-8">
+<<<<<<< HEAD
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
               Activity Information
@@ -375,10 +451,18 @@ export const RecordDetail = () => {
                 <label className="text-sm font-medium text-gray-500">Account Created</label>
                 <p className="text-gray-900">{formatDateTime(currentRecord.created_at)}</p>
                 <p className="text-gray-500 text-sm">{formatRelativeTime(currentRecord.created_at)}</p>
+=======
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Activity Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Created At</label>
+                <p className="text-gray-900">{formatDateTime(record.created_at)}</p>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Last Login</label>
                 <p className="text-gray-900">
+<<<<<<< HEAD
                   {currentRecord.last_login ? formatDateTime(currentRecord.last_login) : 'Never logged in'}
                 </p>
                 {currentRecord.last_login && (
@@ -436,12 +520,83 @@ export const RecordDetail = () => {
               </div>
             </div>
           )}
+=======
+                  {record.last_login ? formatRelativeTime(record.last_login) : 'Never logged in'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Data */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Related Data</h2>
+            <button
+              onClick={() => navigate(`/database/resumes?user_id=${record.id}`)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+            >
+              View User's Resumes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderContactDetail = () => {
+    if (!record) return null;
+
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {record.full_name || record.name || 'Unnamed Contact'}
+          </h1>
+          <p className="text-gray-600">Contact ID: {record.id}</p>
+        </div>
+
+        <div className="p-6">
+          {/* Contact Information */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Full Name</label>
+                <p className="text-gray-900">{record.full_name || record.name || 'Not set'}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Email</label>
+                <p className="text-gray-900">{record.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Phone</label>
+                <p className="text-gray-900">{formatPhone(record.phone_number || record.phone)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Chosen Field</label>
+                <p className="text-gray-900">{capitalize(record.chosen_field || 'Not set')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Timestamps */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Timestamps</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Created At</label>
+                <p className="text-gray-900">{formatDateTime(record.created_at)}</p>
+              </div>
+            </div>
+          </div>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         </div>
       </div>
     );
   };
 
   const renderResumeDetail = () => {
+<<<<<<< HEAD
     const parsedData = parseEnhancedResumeData(currentRecord.resume_data);
     const experience = parsedData.experience || 0;
     const hasCalculatedExperience = parsedData.calculatedExperience > 0 && parsedData.calculatedExperience !== experience;
@@ -456,6 +611,13 @@ export const RecordDetail = () => {
     const hasProjects = parsedData.projects.length > 0;
     const hasCertifications = parsedData.certifications.length > 0;
     const hasAiExperience = parsedData.aiExperience.length > 0;
+=======
+    if (!record) return null;
+
+    const parsedData = parseResumeData(record.resume_data);
+    // Get experience from resume_data JSON (actual values: 6, 2, 4, 3, 5)
+    const experience = parsedData.experience || 0;
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -464,6 +626,7 @@ export const RecordDetail = () => {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
+<<<<<<< HEAD
                 Resume #{currentRecord.id}
               </h1>
               <p className="text-gray-600">Resume ID: {currentRecord.id}</p>
@@ -478,6 +641,15 @@ export const RecordDetail = () => {
                   {hasCalculatedExperience ? formatExperience(parsedData.calculatedExperience) : formatExperience(experience)}
                   {hasCalculatedExperience && " (calculated)"}
                 </span>
+=======
+                {parsedData.title || 'Untitled Resume'}
+              </h1>
+              <p className="text-gray-600">Resume ID: {record.id}</p>
+            </div>
+            {experience > 0 && (
+              <div className="flex items-center space-x-1 px-3 py-1 bg-orange-100 rounded-full text-orange-800">
+                <span className="font-medium">{formatExperience(experience)}</span>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               </div>
             )}
           </div>
@@ -489,6 +661,7 @@ export const RecordDetail = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+<<<<<<< HEAD
                 <label className="text-sm font-medium text-gray-500">Created By</label>
                 {currentRecord.user_id ? (
                   <button
@@ -571,18 +744,52 @@ export const RecordDetail = () => {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-gray-700 leading-relaxed">{parsedData.summary}</p>
               </div>
+=======
+                <label className="text-sm font-medium text-gray-500">User ID</label>
+                <button
+                  onClick={() => navigate(`/database/users/${record.user_id}`)}
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  View User {record.user_id}
+                </button>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Created At</label>
+                <p className="text-gray-900">{formatDateTime(record.created_at)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Experience</label>
+                <p className="text-gray-900">{formatExperience(experience)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary */}
+          {parsedData.summary && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Summary</h2>
+              <p className="text-gray-700 leading-relaxed">{parsedData.summary}</p>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             </div>
           )}
 
           {/* Skills */}
+<<<<<<< HEAD
           {hasSkills && (
+=======
+          {parsedData.skills && parsedData.skills.length > 0 && (
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Skills</h2>
               <div className="flex flex-wrap gap-2">
                 {parsedData.skills.map((skill, index) => (
                   <span
                     key={index}
+<<<<<<< HEAD
                     className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+=======
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
                   >
                     {skill}
                   </span>
@@ -591,6 +798,7 @@ export const RecordDetail = () => {
             </div>
           )}
 
+<<<<<<< HEAD
           {/* Education */}
           {hasEducation && (
             <div className="mb-8">
@@ -955,6 +1163,14 @@ export const RecordDetail = () => {
                 </div>
               ))}
             </div>
+=======
+          {/* Raw Data */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Raw Data</h2>
+            <pre className="bg-gray-50 p-4 rounded-lg overflow-auto text-sm max-h-96">
+              {JSON.stringify(record, null, 2)}
+            </pre>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
           </div>
         </div>
       </div>
@@ -962,6 +1178,7 @@ export const RecordDetail = () => {
   };
 
   const renderContent = () => {
+<<<<<<< HEAD
     if (!currentRecord) return null;
 
     // Database 1: Resumes
@@ -1015,16 +1232,43 @@ export const RecordDetail = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+=======
+    switch (table) {
+      case 'users':
+        return renderUserDetail();
+      case 'contacts':
+        return renderContactDetail();
+      case 'resumes':
+        return renderResumeDetail();
+      default:
+        return (
+          <EmptyState
+            type="data"
+            title="Unknown Table"
+            message={`Table "${table}" is not supported.`}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
       <Breadcrumb 
         items={[
           { label: 'Home', href: '/' },
           { label: 'Database', href: '/database' },
+<<<<<<< HEAD
           { label: getDatabaseName(), href: `/database/${database}` },
           { label: getTableName(table), href: `/database/${database}/${table}` },
+=======
+          { label: capitalize(table), href: `/database/${table}` },
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
           { label: `Record ${id}`, href: null }
         ]} 
       />
 
+<<<<<<< HEAD
       {/* Database Indicator */}
       <div className="flex items-center space-x-2 mb-6">
         <div className={`w-3 h-3 rounded-full bg-${getDatabaseColor()}-500`}></div>
@@ -1033,12 +1277,15 @@ export const RecordDetail = () => {
         </span>
       </div>
 
+=======
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
       {renderContent()}
 
       {/* Navigation Buttons */}
       <div className="mt-6 flex space-x-4">
         <button
           onClick={() => navigate(-1)}
+<<<<<<< HEAD
           className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
         >
           <span>←</span>
@@ -1049,6 +1296,17 @@ export const RecordDetail = () => {
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
         >
           <span>View All {getTableName(table)}</span>
+=======
+          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors"
+        >
+          Back
+        </button>
+        <button
+          onClick={() => navigate(`/database/${table}`)}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+        >
+          View All {capitalize(table)}
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         </button>
       </div>
     </div>

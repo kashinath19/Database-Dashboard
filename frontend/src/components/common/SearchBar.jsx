@@ -27,4 +27,8 @@ export const SearchBar = ({ value, onChange, placeholder = "Search..." }) => {
       />
     </div>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
+<<<<<<< HEAD
 import { Users, Contact, FileText, Database, UserCheck, MessageSquare, BarChart3, Star, Podcast, GraduationCap, Download } from 'lucide-react';
 
 // Database configuration
@@ -26,11 +27,15 @@ const databaseConfig = {
     tables: ['conversations_users']
   }
 };
+=======
+import { Users, Contact, FileText, Database } from 'lucide-react';
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
 export const DatabaseView = () => {
   const navigate = useNavigate();
   const { data: stats, loading, error } = useApi('/database/stats');
 
+<<<<<<< HEAD
   // Table configuration with icons and descriptions - DISTINCT TABLES FOR EACH DB
   const tableConfig = {
     // Gigaversity.in (resumes db) tables
@@ -170,6 +175,42 @@ export const DatabaseView = () => {
 
   const handleTableClick = (databaseId, tableSlug) => {
     navigate(`/database/${databaseId}/${tableSlug}`);
+=======
+  const tables = [
+    {
+      name: 'Users',
+      slug: 'users',
+      icon: Users,
+      color: 'blue',
+      description: 'Registered users in the system'
+    },
+    {
+      name: 'Contacts',
+      slug: 'contacts',
+      icon: Contact,
+      color: 'green',
+      description: 'Contact form submissions'
+    },
+    {
+      name: 'Resumes',
+      slug: 'resumes',
+      icon: FileText,
+      color: 'purple',
+      description: 'Generated resumes'
+    }
+  ];
+
+  // Map API table names to frontend table names
+  const getTableCount = (tableSlug) => {
+    if (!stats?.table_stats) return 0;
+    
+    // Handle the mismatch between API and frontend table names
+    if (tableSlug === 'resumes') {
+      return stats.table_stats.generated_resumes || 0;
+    }
+    
+    return stats.table_stats[tableSlug] || 0;
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   };
 
   if (error) {
@@ -196,6 +237,7 @@ export const DatabaseView = () => {
       <div className="mb-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Database Overview</h1>
         <p className="text-gray-600">
+<<<<<<< HEAD
           Explore and manage all data tables across both databases. Export individual tables to CSV for analysis.
         </p>
       </div>
@@ -272,6 +314,38 @@ export const DatabaseView = () => {
                   </div>
                 ))}
               </div>
+=======
+          Explore and manage all data tables in the Resume Database.
+        </p>
+      </div>
+
+      {/* Tables Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tables.map((table) => (
+          <div
+            key={table.slug}
+            className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate(`/database/${table.slug}`)}
+          >
+            <div className="flex items-center space-x-4 mb-4">
+              <div className={`p-3 rounded-lg bg-${table.color}-100`}>
+                <table.icon className={`h-6 w-6 text-${table.color}-600`} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {table.name}
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  {table.description}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold text-gray-900">
+                {loading ? '...' : getTableCount(table.slug)}
+              </span>
+              <span className="text-sm text-gray-500">records</span>
+>>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             </div>
           </div>
         ))}
