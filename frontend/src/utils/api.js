@@ -1,20 +1,15 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
 const API_BASE_URL = 'http://localhost:8000';
-=======
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
 });
 
-// ==========================
-// Request Interceptor
-// ==========================
-api.interceptors.request.use(
+// ===================// Request Interceptor
+// ===================api.interceptors.request.use(
   (config) => {
     console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
     return config;
@@ -25,10 +20,8 @@ api.interceptors.request.use(
   }
 );
 
-// ==========================
-// Response Interceptor
-// ==========================
-api.interceptors.response.use(
+// ===================// Response Interceptor
+// ===================api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Response Error:', error);
@@ -48,23 +41,11 @@ api.interceptors.response.use(
   }
 );
 
-// ==========================
-// API Endpoints
-// ==========================
-export const apiEndpoints = {
+// ===================// API Endpoints
+// ===================export const apiEndpoints = {
   // Global
   health: '/health',
-<<<<<<< HEAD
-  database_stats: '/database/stats',
-  search: '/search',
 
-  // Database 1 (Resumes)
-=======
-  databaseStats: '/database/stats',
-  globalStats: '/stats/global',
-
-  // Tables with pagination
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   users: (params = {}) => ({
     url: '/users',
     params: { page: 1, limit: 20, ...params },
@@ -73,16 +54,12 @@ export const apiEndpoints = {
     url: '/contacts',
     params: { page: 1, limit: 20, ...params },
   }),
-<<<<<<< HEAD
   generated_resumes: (params = {}) => ({
-=======
   resumes: (params = {}) => ({
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
     url: '/generated_resumes',
     params: { page: 1, limit: 20, ...params },
   }),
 
-<<<<<<< HEAD
   // Database 2 (Prescreening)
   candidates: (params = {}) => ({
     url: '/candidates',
@@ -120,14 +97,11 @@ export const apiEndpoints = {
   }),
 
   // ✅ Single records - Database 1
-=======
   // ✅ Single records
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   user: (userId) => `/users/${userId}`,
   contact: (contactId) => `/contacts/${contactId}`,
   resume: (resumeId) => `/generated_resumes/${resumeId}`,
 
-<<<<<<< HEAD
   // ✅ Single records - Database 2
   candidate: (candidateId) => `/candidates/${candidateId}`,
   evaluation: (evaluationId) => `/evaluations/${evaluationId}`,
@@ -152,7 +126,6 @@ export const apiEndpoints = {
   export_table: (database, table, params = {}) => ({
     url: `/api/export/${database}/${table}`,
     params: params,
-=======
   // Relationships
   userResumes: (userId) => `/users/${userId}/resumes`,
   resumeUser: (resumeId) => `/generated_resumes/${resumeId}/user`,
@@ -167,15 +140,11 @@ export const apiEndpoints = {
   search: (query, tables = 'users,contacts,resumes') => ({
     url: '/search',
     params: { q: query, tables },
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   }),
 };
 
-// ==========================
-<<<<<<< HEAD
-// Helper Functions
-// ==========================
-export const getTableEndpoint = (database, tableName) => {
+// ===================// Helper Functions
+// ===================export const getTableEndpoint = (database, tableName) => {
   const endpoints = {
     resumes: {
       users: apiEndpoints.users,
@@ -259,10 +228,8 @@ export const fetchColumnValues = async (database, table, column) => {
   }
 };
 
-// ==========================
-// CSV Export Function
-// ==========================
-export const exportTableToCSV = async (database, table, params = {}) => {
+// ===================// CSV Export Function
+// ===================export const exportTableToCSV = async (database, table, params = {}) => {
   try {
     const response = await api.get(apiEndpoints.export_table(database, table).url, {
       params: params,
@@ -287,10 +254,8 @@ export const exportTableToCSV = async (database, table, params = {}) => {
 };
 
 export default api;
-=======
 // Helper Function
-// ==========================
-export const getTableEndpoint = (tableName) => {
+// ===================export const getTableEndpoint = (tableName) => {
   const endpoints = {
     users: apiEndpoints.users,
     contacts: apiEndpoints.contacts,
@@ -300,4 +265,4 @@ export const getTableEndpoint = (tableName) => {
 };
 
 export default api;
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+

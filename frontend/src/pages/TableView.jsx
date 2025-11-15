@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-=======
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
 import { useApi } from '../hooks/useApi';
 import { usePagination } from '../hooks/usePagination';
 import { useFilters } from '../hooks/useFilters';
@@ -12,7 +6,6 @@ import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { SearchBar } from '../components/common/SearchBar';
 import { FilterPanel } from '../components/common/FilterPanel';
 import { Pagination } from '../components/common/Pagination';
-<<<<<<< HEAD
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 import { EmptyState } from '../components/common/EmptyState';
 import { capitalize, formatDate, formatPhone } from '../utils/formatters';
@@ -73,7 +66,6 @@ export const TableView = () => {
   const apiEndpoint = useMemo(() => {
     return getTableEndpoint(database, table);
   }, [database, table]);
-=======
 import { UserCard } from '../components/cards/UserCard';
 import { ContactCard } from '../components/cards/ContactCard';
 import { ResumeCard } from '../components/cards/ResumeCard';
@@ -106,7 +98,6 @@ export const TableView = () => {
   const apiEndpoint = useMemo(() => {
     return getTableEndpoint(table);
   }, [table]);
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
   // Create a stable params object to prevent unnecessary re-fetches
   const fetchParams = useMemo(() => {
@@ -125,16 +116,12 @@ export const TableView = () => {
       }
     });
     
-<<<<<<< HEAD
-=======
-    console.log('Fetch params:', params);
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
     return params;
   }, [page, limit, sortBy, sortOrder, filters]);
 
   const { data, loading, error, execute } = useApi(apiEndpoint, true, fetchParams);
 
-<<<<<<< HEAD
   // Navigation handlers - defined at the top to avoid reference errors
   const handleResumesClick = useCallback((userId) => {
     navigate(`/database/resumes/generated_resumes?filter_user_id=${userId}`);
@@ -246,16 +233,11 @@ export const TableView = () => {
     };
   }, [showExportDropdown]);
 
-=======
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   // Fixed search handler
   const handleSearch = useCallback((query) => {
     setSearchQuery(query);
     
-<<<<<<< HEAD
-=======
-    // Create new filters with search query
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
     const newFilters = { ...filters };
     
     if (query) {
@@ -267,8 +249,6 @@ export const TableView = () => {
     updateFilters(newFilters);
   }, [filters, updateFilters, setSearchQuery]);
 
-<<<<<<< HEAD
-=======
   const handleResumesClick = (userId) => {
     navigate(`/database/resumes?user_id=${userId}`);
   };
@@ -277,7 +257,6 @@ export const TableView = () => {
     navigate(`/database/users/${userId}`);
   };
 
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   const handleSort = (column) => {
     if (sortBy === column) {
       setSort(column, sortOrder === 'asc' ? 'desc' : 'asc');
@@ -291,7 +270,6 @@ export const TableView = () => {
     return sortOrder === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
   };
 
-<<<<<<< HEAD
   const getDatabaseColor = () => {
     if (database === 'resumes') return 'blue';
     if (database === 'prescreening') return 'purple';
@@ -408,7 +386,6 @@ export const TableView = () => {
             value ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'
           }`}>
             {value ? capitalize(value) : 'Email'}
-=======
   // Table column configurations
   const getTableColumns = () => {
     switch (table) {
@@ -466,12 +443,10 @@ export const TableView = () => {
         return (
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800`}>
             {capitalize(item.oauth_provider || item.auth_method || 'email')}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
           </span>
         );
       
       case 'phone':
-<<<<<<< HEAD
       case 'mobile_number':
       case 'contact_no':
         return <span className="text-gray-600">{formatPhone(value)}</span>;
@@ -643,7 +618,6 @@ export const TableView = () => {
             {String(value)}
           </span>
         );
-=======
       case 'phone_number':
         return <span className="text-gray-600">{formatPhone(item.phone || item.phone_number)}</span>;
       
@@ -719,14 +693,12 @@ export const TableView = () => {
       
       default:
         return <span className="text-gray-600">{item[column.key]}</span>;
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
     }
   };
 
   const renderTableView = () => {
     const columns = getTableColumns();
     
-<<<<<<< HEAD
     if (columns.length === 0) {
       return (
         <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
@@ -747,18 +719,15 @@ export const TableView = () => {
         >
           <table className="min-w-full border-collapse" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
-=======
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               <tr>
                 {columns.map((column) => (
                   <th
                     key={column.key}
-<<<<<<< HEAD
                     style={{ 
                       width: `${column.width}px`, 
                       minWidth: `${column.width}px`,
@@ -788,7 +757,6 @@ export const TableView = () => {
                 >
                   Actions
                 </th>
-=======
                     className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${column.width} ${
                       column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
                     }`}
@@ -800,12 +768,10 @@ export const TableView = () => {
                     </div>
                   </th>
                 ))}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data?.data?.map((item, index) => (
-<<<<<<< HEAD
                 <tr key={item.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   {columns.map((column) => (
                     <td 
@@ -839,14 +805,12 @@ export const TableView = () => {
                       <span>View</span>
                     </button>
                   </td>
-=======
                 <tr key={item.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm">
                       {renderTableCell(item, column)}
                     </td>
                   ))}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
                 </tr>
               ))}
             </tbody>
@@ -856,7 +820,6 @@ export const TableView = () => {
     );
   };
 
-<<<<<<< HEAD
   // FIXED: Enhanced renderCards function with proper error handling and navigation
   const renderCards = () => {
     if (!data?.data?.length) return null;
@@ -1039,7 +1002,6 @@ export const TableView = () => {
     ));
   };
 
-=======
   const renderCards = () => {
     if (!data?.data?.length) return null;
 
@@ -1069,7 +1031,6 @@ export const TableView = () => {
     }
   };
 
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   const getEmptyState = () => {
     if (hasActiveFilters) {
       return (
@@ -1100,7 +1061,6 @@ export const TableView = () => {
     has_prev: false
   };
 
-<<<<<<< HEAD
   // NEW: Get active filter display names
   const getActiveFilterDisplay = () => {
     const activeFilters = [];
@@ -1119,8 +1079,6 @@ export const TableView = () => {
 
   const activeFilterDisplay = getActiveFilterDisplay();
 
-=======
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Breadcrumb */}
@@ -1128,19 +1086,13 @@ export const TableView = () => {
         items={[
           { label: 'Home', href: '/' },
           { label: 'Database', href: '/database' },
-<<<<<<< HEAD
-          { label: getDatabaseName(), href: `/database/${database}` },
-          { label: getTableDisplayName(), href: null }
-=======
-          { label: capitalize(table), href: null }
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
         ]} 
       />
 
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
         <div>
-<<<<<<< HEAD
           <div className="flex items-center space-x-2 mb-2">
             <div className={`w-3 h-3 rounded-full bg-${getDatabaseColor()}-500`}></div>
             <span className={`text-sm font-medium text-${getDatabaseColor()}-600`}>
@@ -1240,7 +1192,6 @@ export const TableView = () => {
               className={`px-3 py-2 text-sm ${
                 viewMode === 'cards'
                   ? `bg-${getDatabaseColor()}-600 text-white`
-=======
           <h1 className="text-2xl font-bold text-gray-900">
             {capitalize(table)}
           </h1>
@@ -1257,14 +1208,11 @@ export const TableView = () => {
               className={`px-3 py-2 text-sm ${
                 viewMode === 'cards'
                   ? 'bg-blue-600 text-white'
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
               Cards
             </button>
-<<<<<<< HEAD
-=======
             <button
               onClick={() => setViewMode('table')}
               className={`px-3 py-2 text-sm ${
@@ -1275,7 +1223,6 @@ export const TableView = () => {
             >
               Table
             </button>
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
           </div>
         </div>
       </div>
@@ -1287,7 +1234,6 @@ export const TableView = () => {
             <SearchBar
               value={searchQuery}
               onChange={handleSearch}
-<<<<<<< HEAD
               placeholder={`Search ${getTableDisplayName().toLowerCase()}...`}
             />
             
@@ -1302,7 +1248,6 @@ export const TableView = () => {
               onRemoveColumnFilter={removeColumnFilter}
               onClearColumnFilters={clearColumnFilters}
               availableColumns={availableColumns}
-=======
               placeholder={`Search ${table}...`}
             />
             
@@ -1311,7 +1256,6 @@ export const TableView = () => {
               filters={filters}
               onFiltersChange={updateFilters}
               onClear={clearFilters}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             />
           </div>
         </div>
@@ -1367,12 +1311,9 @@ export const TableView = () => {
             getEmptyState()
           ) : (
             <>
-<<<<<<< HEAD
               {/* Table View */}
               {viewMode === 'table' && renderTableView()}
 
-=======
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               {/* Cards View */}
               {viewMode === 'cards' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -1380,12 +1321,6 @@ export const TableView = () => {
                 </div>
               )}
 
-<<<<<<< HEAD
-=======
-              {/* Table View */}
-              {viewMode === 'table' && renderTableView()}
-
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               {/* Pagination */}
               {paginationData && (
                 <Pagination

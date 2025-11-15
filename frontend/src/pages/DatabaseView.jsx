@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
-<<<<<<< HEAD
 import { Users, Contact, FileText, Database, UserCheck, MessageSquare, BarChart3, Star, Podcast, GraduationCap, Download } from 'lucide-react';
 
 // Database configuration
@@ -27,15 +26,12 @@ const databaseConfig = {
     tables: ['conversations_users']
   }
 };
-=======
 import { Users, Contact, FileText, Database } from 'lucide-react';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
 export const DatabaseView = () => {
   const navigate = useNavigate();
   const { data: stats, loading, error } = useApi('/database/stats');
 
-<<<<<<< HEAD
   // Table configuration with icons and descriptions - DISTINCT TABLES FOR EACH DB
   const tableConfig = {
     // Gigaversity.in (resumes db) tables
@@ -175,7 +171,6 @@ export const DatabaseView = () => {
 
   const handleTableClick = (databaseId, tableSlug) => {
     navigate(`/database/${databaseId}/${tableSlug}`);
-=======
   const tables = [
     {
       name: 'Users',
@@ -210,7 +205,6 @@ export const DatabaseView = () => {
     }
     
     return stats.table_stats[tableSlug] || 0;
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   };
 
   if (error) {
@@ -237,7 +231,6 @@ export const DatabaseView = () => {
       <div className="mb-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Database Overview</h1>
         <p className="text-gray-600">
-<<<<<<< HEAD
           Explore and manage all data tables across both databases. Export individual tables to CSV for analysis.
         </p>
       </div>
@@ -314,7 +307,6 @@ export const DatabaseView = () => {
                   </div>
                 ))}
               </div>
-=======
           Explore and manage all data tables in the Resume Database.
         </p>
       </div>
@@ -345,7 +337,6 @@ export const DatabaseView = () => {
                 {loading ? '...' : getTableCount(table.slug)}
               </span>
               <span className="text-sm text-gray-500">records</span>
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             </div>
           </div>
         ))}

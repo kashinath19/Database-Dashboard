@@ -1,9 +1,5 @@
-﻿export const formatDate = (dateString) => {
-<<<<<<< HEAD
-  if (!dateString) return '-';
-=======
-  if (!dateString) return 'Not set';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+export const formatDate = (dateString) => {
+
   
   try {
     const date = new Date(dateString);
@@ -18,11 +14,7 @@
 };
 
 export const formatDateTime = (dateString) => {
-<<<<<<< HEAD
-  if (!dateString) return '-';
-=======
-  if (!dateString) return 'Not set';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
   
   try {
     const date = new Date(dateString);
@@ -60,11 +52,7 @@ export const formatRelativeTime = (dateString) => {
 };
 
 export const formatPhone = (phone) => {
-<<<<<<< HEAD
-  if (!phone) return '-';
-=======
-  if (!phone) return 'Not set';
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+
   
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -90,11 +78,9 @@ export const formatExperience = (years) => {
     return `${years} years`;
   }
 };
-<<<<<<< HEAD
 
 // Helper function to get timestamp from any record
 export const getTimestamp = (record) => {
   return record.created_at || record.timestamp || record.updated_at;
 };
-=======
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+

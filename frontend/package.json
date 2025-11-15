@@ -21,10 +21,8 @@
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
     "vite": "^4.1.0"
-<<<<<<< HEAD
   }
 }
-=======
   },
   "engines": {
   "node": ">=18"
@@ -36,6 +34,5 @@
   "prebuild": "chmod +x node_modules/.bin/vite || true"
 }
 
-
 }
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
+

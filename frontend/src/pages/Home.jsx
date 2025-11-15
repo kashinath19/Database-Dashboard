@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
-<<<<<<< HEAD
 import { Database, Calendar, User, UserCheck, BarChart3, Star, Podcast, MessageSquare, GraduationCap, MessageCircle } from 'lucide-react';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 import { formatRelativeTime, capitalize } from '../utils/formatters';
@@ -151,7 +150,6 @@ export const Home = () => {
     </div>
   );
 
-=======
 import { Database, Users, Contact, FileText, Calendar, User, Mail, Phone, Briefcase } from 'lucide-react';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 import { formatDate, formatRelativeTime, formatPhone, capitalize } from '../utils/formatters';
@@ -216,12 +214,10 @@ const renderRecentUser = (user) => (
     </div>
   </div>
 );
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
   const renderRecentContact = (contact) => (
     <div 
       key={contact.id}
       className="p-3 border border-gray-200 rounded-lg hover:border-green-300 transition-colors cursor-pointer"
-<<<<<<< HEAD
       onClick={() => navigate(`/database/resumes/contacts/${contact.id}`)}
     >
       <div className="flex items-center space-x-3">
@@ -231,7 +227,6 @@ const renderRecentUser = (user) => (
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
             {contact.name || 'Unnamed Contact'}
-=======
       onClick={() => navigate(`/database/contacts/${contact.id}`)}
     >
       <div className="flex items-center space-x-3">
@@ -241,7 +236,6 @@ const renderRecentUser = (user) => (
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
             {contact.full_name || contact.name || 'Unnamed Contact'}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
           </p>
           <p className="text-xs text-gray-500 truncate">{contact.email}</p>
         </div>
@@ -250,33 +244,26 @@ const renderRecentUser = (user) => (
         <span className="text-xs text-gray-500">
           {formatRelativeTime(contact.created_at)}
         </span>
-<<<<<<< HEAD
         {contact.subject && (
           <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full truncate max-w-20">
             {contact.subject}
           </span>
         )}
-=======
         <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
           {capitalize(contact.chosen_field || 'Not set')}
         </span>
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
       </div>
     </div>
   );
 
   const renderRecentResume = (resume) => {
-<<<<<<< HEAD
     const experience = resume.experience || 0;
-=======
     const experience = resume.resume_data?.experience || 0;
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
     
     return (
       <div 
         key={resume.id}
         className="p-3 border border-gray-200 rounded-lg hover:border-purple-300 transition-colors cursor-pointer"
-<<<<<<< HEAD
         onClick={() => navigate(`/database/resumes/generated_resumes/${resume.id}`)}
       >
         <div className="flex items-center space-x-3">
@@ -286,7 +273,6 @@ const renderRecentUser = (user) => (
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
               Resume #{resume.id}
-=======
         onClick={() => navigate(`/database/resumes/${resume.id}`)}
       >
         <div className="flex items-center space-x-3">
@@ -296,7 +282,6 @@ const renderRecentUser = (user) => (
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
               {resume.resume_data?.title || 'Untitled Resume'}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
             </p>
             <p className="text-xs text-gray-500">User {resume.user_id}</p>
           </div>
@@ -315,7 +300,6 @@ const renderRecentUser = (user) => (
     );
   };
 
-<<<<<<< HEAD
   const renderRecentCandidate = (candidate) => (
     <div 
       key={candidate.id}
@@ -534,9 +518,7 @@ const renderRecentUser = (user) => (
   );
 
   const isLoading = statsLoading || usersLoading || contactsLoading || resumesLoading || candidatesLoading || evaluationsLoading || podcastLoading || programCommentsLoading || reviewFeedbacksLoading || studentContactsLoading || conversationsUsersLoading;
-=======
   const isLoading = statsLoading || usersLoading || contactsLoading || resumesLoading;
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
   if (statsError) {
     return (
@@ -557,7 +539,6 @@ const renderRecentUser = (user) => (
           Database Dashboard
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-<<<<<<< HEAD
           Manage and explore user data, candidates, evaluations, and more across all databases.
         </p>
       </div>
@@ -598,7 +579,6 @@ const renderRecentUser = (user) => (
       </div>
 
       {/* Recent Activity - Shows ALL recent activity from all databases */}
-=======
           Manage and explore user data, contacts, and generated resumes in one centralized platform.
         </p>
       </div>
@@ -666,7 +646,6 @@ const renderRecentUser = (user) => (
       </div>
 
       {/* Recent Activity */}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-medium text-gray-900">
@@ -675,19 +654,16 @@ const renderRecentUser = (user) => (
           <Calendar className="h-5 w-5 text-gray-400" />
         </div>
 
-<<<<<<< HEAD
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-6 gap-6">
           {/* Recent Users (Resumes) */}
           <div>
             <div className="flex items-center space-x-2 mb-3">
               <User className="h-4 w-4 text-blue-600" />
-=======
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Users */}
           <div>
             <div className="flex items-center space-x-2 mb-3">
               <Users className="h-4 w-4 text-blue-600" />
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               <h4 className="font-medium text-gray-900">Recent Users</h4>
             </div>
             <div className="space-y-2">
@@ -710,11 +686,8 @@ const renderRecentUser = (user) => (
               )}
             </div>
             <button
-<<<<<<< HEAD
               onClick={() => navigate('/database/resumes/users')}
-=======
               onClick={() => navigate('/database/users')}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               className="w-full mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               View all users →
@@ -724,11 +697,8 @@ const renderRecentUser = (user) => (
           {/* Recent Contacts */}
           <div>
             <div className="flex items-center space-x-2 mb-3">
-<<<<<<< HEAD
               <MessageSquare className="h-4 w-4 text-green-600" />
-=======
               <Contact className="h-4 w-4 text-green-600" />
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               <h4 className="font-medium text-gray-900">Recent Contacts</h4>
             </div>
             <div className="space-y-2">
@@ -751,11 +721,8 @@ const renderRecentUser = (user) => (
               )}
             </div>
             <button
-<<<<<<< HEAD
               onClick={() => navigate('/database/resumes/contacts')}
-=======
               onClick={() => navigate('/database/contacts')}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               className="w-full mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               View all contacts →
@@ -765,11 +732,8 @@ const renderRecentUser = (user) => (
           {/* Recent Resumes */}
           <div>
             <div className="flex items-center space-x-2 mb-3">
-<<<<<<< HEAD
               <Database className="h-4 w-4 text-purple-600" />
-=======
               <FileText className="h-4 w-4 text-purple-600" />
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               <h4 className="font-medium text-gray-900">Recent Resumes</h4>
             </div>
             <div className="space-y-2">
@@ -792,17 +756,13 @@ const renderRecentUser = (user) => (
               )}
             </div>
             <button
-<<<<<<< HEAD
               onClick={() => navigate('/database/resumes/generated_resumes')}
-=======
               onClick={() => navigate('/database/resumes')}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
               className="w-full mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               View all resumes →
             </button>
           </div>
-<<<<<<< HEAD
 
           {/* Recent Candidates */}
           <div>
@@ -902,8 +862,6 @@ const renderRecentUser = (user) => (
               View all chat users →
             </button>
           </div>
-=======
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
         </div>
       </div>
     </div>

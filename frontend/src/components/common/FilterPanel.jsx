@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { Filter, X, Plus, Trash2, ChevronDown, Loader, Check } from 'lucide-react';
 import { fetchColumnValues } from '../../utils/api'; // Corrected import path
@@ -90,7 +89,6 @@ export const FilterPanel = ({ database, table, filters, columnFilters, onFilters
     const numericColumns = ['id', 'user_id', 'candidate_id', 'experience', 'total_score', 'love_rating', 'likes_count', 'comments_count', 'year_of_graduation'];
     return numericColumns.includes(column);
   };
-=======
 import React from 'react';
 import { Filter, X } from 'lucide-react';
 import { useFilterOptions } from '../../hooks/useFilterOptions'; // Fixed import path
@@ -232,7 +230,6 @@ export const FilterPanel = ({ table, filters, onFiltersChange, onClear }) => {
       </div>
     </div>
   );
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -241,7 +238,6 @@ export const FilterPanel = ({ table, filters, onFiltersChange, onClear }) => {
         <Filter className="h-5 w-5 text-gray-400" />
       </div>
 
-<<<<<<< HEAD
       {/* Add New Filter Section */}
       <div className="space-y-3 mb-6">
         <div>
@@ -392,11 +388,9 @@ export const FilterPanel = ({ table, filters, onFiltersChange, onClear }) => {
           ))}
         </div>
       )}
-=======
       {table === 'users' && renderUsersFilters()}
       {table === 'contacts' && renderContactsFilters()}
       {table === 'resumes' && renderResumesFilters()}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
 
       {hasActiveFilters && (
         <button
@@ -404,7 +398,6 @@ export const FilterPanel = ({ table, filters, onFiltersChange, onClear }) => {
           className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <X className="h-4 w-4 mr-2" />
-<<<<<<< HEAD
           Clear All Filters
         </button>
       )}
@@ -416,11 +409,9 @@ export const FilterPanel = ({ table, filters, onFiltersChange, onClear }) => {
           onClick={() => setShowValueDropdown(false)}
         />
       )}
-=======
           Clear Filters
         </button>
       )}
->>>>>>> 5c418b98bde4e07846168aee8a9305902ee14b8a
     </div>
   );
 };
