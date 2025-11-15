@@ -1,0 +1,69 @@
+Folder PATH listing for volume OS
+Volume serial number is D6CC-CB39
+C:.
+¦   abc.txt
+¦   file_structure.txt
+¦   README.md
+¦   
++---backend
+¦   ¦   .env
+¦   ¦   .gitignore
+¦   ¦   generate_sql.py
+¦   ¦   main.py
+¦   ¦   requirements.txt
+¦   ¦   seed_users.sql
++---frontend		
+    +---public
+    ¦       index.html
+    ¦       
+    +---src
+        ¦   App.js
+        ¦   App.jsx
+        ¦   index.css
+        ¦   main.jsx
+        ¦   
+        +---components
+        ¦   +---cards
+        ¦   ¦   +---prescreening_test_db
+        ¦   ¦   ¦       CandidateCard.jsx
+        ¦   ¦   ¦       EvaluationCard.jsx
+        ¦   ¦   ¦       PodcastQuestionCard.jsx
+        ¦   ¦   ¦       ProgramCommentCard.jsx
+        ¦   ¦   ¦       ProgramStatsCard.jsx
+        ¦   ¦   ¦       ReviewFeedbackCard.jsx
+        ¦   ¦   ¦       StudentContactCard.jsx
+        ¦   ¦   ¦       
+        ¦   ¦   +---resumes_db
+        ¦   ¦           ContactCard.jsx
+        ¦   ¦           ResumeCard.jsx
+        ¦   ¦           UserCard.jsx
+        ¦   ¦           
+        ¦   +---common
+        ¦   ¦       EmptyState.jsx
+        ¦   ¦       FilterPanel.jsx
+        ¦   ¦       LoadingSkeleton.jsx
+        ¦   ¦       Pagination.jsx
+        ¦   ¦       SearchBar.jsx
+        ¦   ¦       StatCard.jsx
+        ¦   ¦       
+        ¦   +---layout
+        ¦           Breadcrumb.jsx
+        ¦           Header.jsx
+        ¦           
+        +---hooks
+        ¦       useApi.js
+        ¦       useFilterOptions.js
+        ¦       useFilters.js
+        ¦       usePagination.js
+        ¦       
+        +---pages
+        ¦       DatabaseView.jsx
+        ¦       Home.jsx
+        ¦       RecordDetail.jsx
+        ¦       TableView.jsx
+        ¦       
+        +---utils
+                api.js
+                formatters.js
+                parseResumeData.js
+                
