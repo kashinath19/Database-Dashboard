@@ -39,5 +39,4 @@ export const useApi = (endpoint, immediate = true, initialParams = {}) => {
   }, [execute, immediate, JSON.stringify(initialParams)]); // Add params as dependency
 
   return { data, loading, error, execute, setData };
-
-
+};

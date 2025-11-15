@@ -3,10 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prebuild": "chmod +x node_modules/.bin/vite || true"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -23,16 +27,3 @@
     "vite": "^4.1.0"
   }
 }
-  },
-  "engines": {
-  "node": ">=18"
-},
-  "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "prebuild": "chmod +x node_modules/.bin/vite || true"
-}
-
-}
-

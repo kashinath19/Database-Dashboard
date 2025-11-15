@@ -18,11 +18,6 @@ export const useFilters = (tableName) => {
     return filters;
   }, [searchParams]);
 
-  const filterKeys = [
-    'search', 'auth_method', 'has_phone', 'last_login', 'chosen_field',
-    'user_id', 'experience_min', 'experience_max', 'date_from', 'date_to'
-  ];
-
   // Memoized filters
   const filters = useMemo(() => {
     const params = {};
@@ -139,53 +134,6 @@ export const useFilters = (tableName) => {
         newParams.set('page', '1');
       }
       
-    
-    filterKeys.forEach(key => {
-      const value = searchParams.get(key);
-      if (value !== null && value !== '') {
-        if (key === 'has_phone') {
-          params[key] = value === 'true';
-        } else if (['user_id', 'experience_min', 'experience_max'].includes(key)) {
-          const numValue = Number(value);
-          params[key] = isNaN(numValue) ? value : numValue;
-        } else {
-          params[key] = value;
-        }
-      }
-    });
-
-    return params;
-  }, [searchParams]);
-
-  // Smart filter updater with page reset
-  const updateFilters = useCallback((newFilters) => {
-    setSearchParams(prev => {
-      const newParams = new URLSearchParams(prev);
-      const currentPage = newParams.get('page'); // Store current page
-
-      // Remove all old filter params
-      filterKeys.forEach(param => {
-        newParams.delete(param);
-      });
-
-      // Set new filters
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-          newParams.set(key, value.toString());
-        }
-      });
-
-      // Only reset page to 1 if filters actually changed
-      const hasFilterChanges = filterKeys.some(key => 
-        newFilters[key]?.toString() !== prev.get(key)?.toString()
-      );
-
-      if (hasFilterChanges) {
-        newParams.set('page', '1');
-      } else {
-        newParams.set('page', currentPage || '1');
-      }
-
       return newParams;
     }, { replace: true });
   }, [setSearchParams]);
@@ -208,7 +156,7 @@ export const useFilters = (tableName) => {
     }, { replace: true });
     
     setSearchQuery('');
-
+    setColumnFilters([]);
   }, [setSearchParams, setSearchQuery]);
 
   // Detect if any filter is currently active
@@ -224,18 +172,13 @@ export const useFilters = (tableName) => {
   return {
     filters,
     columnFilters,
-    return filterKeys.some(key => {
-      const value = searchParams.get(key);
-      return value !== null && value !== '';
-    });
-  }, [searchParams]);
-
-  return {
-    filters,
     searchQuery,
     setSearchQuery,
     updateFilters,
     clearFilters,
-
+    hasActiveFilters,
+    addColumnFilter,
+    removeColumnFilter,
+    clearColumnFilters
   };
 };

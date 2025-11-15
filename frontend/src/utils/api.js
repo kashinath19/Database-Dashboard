@@ -1,15 +1,16 @@
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
 });
 
-// ===================// Request Interceptor
-// ===================api.interceptors.request.use(
+// ==========================
+// Request Interceptor
+// ==========================
+api.interceptors.request.use(
   (config) => {
     console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
     return config;
@@ -20,8 +21,10 @@ const api = axios.create({
   }
 );
 
-// ===================// Response Interceptor
-// ===================api.interceptors.response.use(
+// ==========================
+// Response Interceptor
+// ==========================
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Response Error:', error);
@@ -41,11 +44,16 @@ const api = axios.create({
   }
 );
 
-// ===================// API Endpoints
-// ===================export const apiEndpoints = {
+// ==========================
+// API Endpoints
+// ==========================
+export const apiEndpoints = {
   // Global
   health: '/health',
+  database_stats: '/database/stats',
+  search: '/search',
 
+  // Database 1 (Resumes)
   users: (params = {}) => ({
     url: '/users',
     params: { page: 1, limit: 20, ...params },
@@ -55,7 +63,6 @@ const api = axios.create({
     params: { page: 1, limit: 20, ...params },
   }),
   generated_resumes: (params = {}) => ({
-  resumes: (params = {}) => ({
     url: '/generated_resumes',
     params: { page: 1, limit: 20, ...params },
   }),
@@ -97,7 +104,6 @@ const api = axios.create({
   }),
 
   // ✅ Single records - Database 1
-  // ✅ Single records
   user: (userId) => `/users/${userId}`,
   contact: (contactId) => `/contacts/${contactId}`,
   resume: (resumeId) => `/generated_resumes/${resumeId}`,
@@ -126,25 +132,13 @@ const api = axios.create({
   export_table: (database, table, params = {}) => ({
     url: `/api/export/${database}/${table}`,
     params: params,
-  // Relationships
-  userResumes: (userId) => `/users/${userId}/resumes`,
-  resumeUser: (resumeId) => `/generated_resumes/${resumeId}/user`,
-  userStats: (userId) => `/users/${userId}/stats`,
-
-  // Statistics
-  usersStats: '/stats/users',
-  contactsStats: '/stats/contacts',
-  resumesStats: '/stats/resumes',
-
-  // Search
-  search: (query, tables = 'users,contacts,resumes') => ({
-    url: '/search',
-    params: { q: query, tables },
   }),
 };
 
-// ===================// Helper Functions
-// ===================export const getTableEndpoint = (database, tableName) => {
+// ==========================
+// Helper Functions
+// ==========================
+export const getTableEndpoint = (database, tableName) => {
   const endpoints = {
     resumes: {
       users: apiEndpoints.users,
@@ -228,8 +222,10 @@ export const fetchColumnValues = async (database, table, column) => {
   }
 };
 
-// ===================// CSV Export Function
-// ===================export const exportTableToCSV = async (database, table, params = {}) => {
+// ==========================
+// CSV Export Function
+// ==========================
+export const exportTableToCSV = async (database, table, params = {}) => {
   try {
     const response = await api.get(apiEndpoints.export_table(database, table).url, {
       params: params,
@@ -254,15 +250,3 @@ export const fetchColumnValues = async (database, table, column) => {
 };
 
 export default api;
-// Helper Function
-// ===================export const getTableEndpoint = (tableName) => {
-  const endpoints = {
-    users: apiEndpoints.users,
-    contacts: apiEndpoints.contacts,
-    resumes: apiEndpoints.resumes,
-  };
-  return endpoints[tableName];
-};
-
-export default api;
-

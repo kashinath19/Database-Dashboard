@@ -26,7 +26,6 @@ const databaseConfig = {
     tables: ['conversations_users']
   }
 };
-import { Users, Contact, FileText, Database } from 'lucide-react';
 
 export const DatabaseView = () => {
   const navigate = useNavigate();
@@ -171,40 +170,12 @@ export const DatabaseView = () => {
 
   const handleTableClick = (databaseId, tableSlug) => {
     navigate(`/database/${databaseId}/${tableSlug}`);
-  const tables = [
-    {
-      name: 'Users',
-      slug: 'users',
-      icon: Users,
-      color: 'blue',
-      description: 'Registered users in the system'
-    },
-    {
-      name: 'Contacts',
-      slug: 'contacts',
-      icon: Contact,
-      color: 'green',
-      description: 'Contact form submissions'
-    },
-    {
-      name: 'Resumes',
-      slug: 'resumes',
-      icon: FileText,
-      color: 'purple',
-      description: 'Generated resumes'
-    }
-  ];
+  };
 
-  // Map API table names to frontend table names
-  const getTableCount = (tableSlug) => {
-    if (!stats?.table_stats) return 0;
-    
-    // Handle the mismatch between API and frontend table names
-    if (tableSlug === 'resumes') {
-      return stats.table_stats.generated_resumes || 0;
-    }
-    
-    return stats.table_stats[tableSlug] || 0;
+  const handleExportClick = (databaseId, tableSlug, event) => {
+    event.stopPropagation(); // Prevent table click event
+    // TODO: Implement export functionality
+    console.log(`Export ${databaseId}.${tableSlug}`);
   };
 
   if (error) {
@@ -268,7 +239,8 @@ export const DatabaseView = () => {
                 {database.tables.map((table) => (
                   <div
                     key={table.slug}
-                    className="bg-gray-50 rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                    className="bg-gray-50 rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleTableClick(database.id, table.slug)}
                   >
                     <div className="flex items-center space-x-4 mb-4">
                       <div className={`p-3 rounded-lg bg-${database.color}-100`}>
@@ -297,7 +269,7 @@ export const DatabaseView = () => {
                         View Data
                       </button>
                       <button
-                        onClick={() => handleTableClick(database.id, table.slug)}
+                        onClick={(e) => handleExportClick(database.id, table.slug, e)}
                         className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition-colors"
                         title="Export to CSV"
                       >
@@ -307,36 +279,6 @@ export const DatabaseView = () => {
                   </div>
                 ))}
               </div>
-          Explore and manage all data tables in the Resume Database.
-        </p>
-      </div>
-
-      {/* Tables Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tables.map((table) => (
-          <div
-            key={table.slug}
-            className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate(`/database/${table.slug}`)}
-          >
-            <div className="flex items-center space-x-4 mb-4">
-              <div className={`p-3 rounded-lg bg-${table.color}-100`}>
-                <table.icon className={`h-6 w-6 text-${table.color}-600`} />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {table.name}
-                </h3>
-                <p className="text-gray-500 text-sm">
-                  {table.description}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold text-gray-900">
-                {loading ? '...' : getTableCount(table.slug)}
-              </span>
-              <span className="text-sm text-gray-500">records</span>
             </div>
           </div>
         ))}
